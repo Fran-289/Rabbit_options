@@ -40,7 +40,7 @@ const PlayerScreen = ({ navigation }: any) => {
     toggleShuffle,
     cycleRepeat,
   } = useMusic();
-  const { colors } = useTheme();
+  const { colors, t } = useTheme();
 
   const videoRef = useRef<any>(null);
   const artworkScale = useRef(new Animated.Value(1)).current;
@@ -116,12 +116,12 @@ const PlayerScreen = ({ navigation }: any) => {
   const handleDelete = () => {
     if (!currentTrack) return;
     Alert.alert(
-      'Eliminar',
+      t('deleteTrack'),
       `¿Eliminar "${currentTrack.name}"?`,
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('cancel'), style: 'cancel' },
         {
-          text: 'Eliminar',
+          text: t('delete'),
           style: 'destructive',
           onPress: () => {
             stop();
@@ -296,7 +296,8 @@ const PlayerScreen = ({ navigation }: any) => {
             style={styles.volumeSlider}
             onPress={(e) => {
               const { locationX } = e.nativeEvent;
-              const newVolume = Math.max(0, Math.min(1, locationX / 200));
+              const sliderWidth = 200;
+              const newVolume = Math.max(0, Math.min(1, locationX / sliderWidth));
               setVolume(newVolume);
             }}>
             <View style={[styles.volumeBar, { backgroundColor: colors.surfaceLight }]}>

@@ -117,7 +117,7 @@ const LocalFilesScreen = ({ navigation }: any) => {
         Linking.openURL(url);
       }
     } catch (error) {
-      Alert.alert('Error', `No se pudo abrir ${name}`);
+      Alert.alert(t('errorGeneric'), `${t('errorCouldNotOpen')} ${name}`);
     }
   };
 
@@ -155,11 +155,11 @@ const LocalFilesScreen = ({ navigation }: any) => {
       const state = await NetInfoModule.fetch();
       if (!state.isConnected || state.type !== 'wifi') {
         Alert.alert(
-          'WiFi requerido',
-          'Tienes activada la opción "Solo WiFi" para descargas. Conectate a una red WiFi o desactiva esta opción en Configuración.',
+          t('wifiRequired'),
+          t('wifiRequiredMsg'),
           [
-            { text: 'Cancelar', style: 'cancel' },
-            { text: 'Ir a Configuración', onPress: () => navigation.navigate('Settings') },
+            { text: t('cancel'), style: 'cancel' },
+            { text: t('goToSettings'), onPress: () => navigation.navigate('Settings') },
           ]
         );
         return;
@@ -205,10 +205,10 @@ const LocalFilesScreen = ({ navigation }: any) => {
         setUrlInput('');
         loadLocalFiles();
       } else {
-        Alert.alert('Error', 'No se pudo descargar desde ese enlace');
+        Alert.alert(t('errorGeneric'), t('errorDownloadLink'));
       }
     } catch (error) {
-      Alert.alert('Error', 'No se pudo descargar. Verifica el enlace.');
+      Alert.alert(t('errorGeneric'), t('errorVerifyConnection'));
     }
 
     Animated.parallel([

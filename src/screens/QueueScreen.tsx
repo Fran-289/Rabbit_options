@@ -23,7 +23,7 @@ const QueueScreen = ({ navigation }: any) => {
     clearQueue,
     setQueue,
   } = useMusic();
-  const { colors } = useTheme();
+  const { colors, t } = useTheme();
 
   const handlePlayTrack = (track: Track, index: number) => {
     setQueue(queue, index);
@@ -31,10 +31,10 @@ const QueueScreen = ({ navigation }: any) => {
   };
 
   const handleRemoveTrack = (trackId: string) => {
-    Alert.alert('Eliminar de la cola', '¿Eliminar esta canción de la cola?', [
-      { text: 'Cancelar', style: 'cancel' },
+    Alert.alert(t('deleteTrack'), t('deleteTrackConfirm'), [
+      { text: t('cancel'), style: 'cancel' },
       {
-        text: 'Eliminar',
+        text: t('delete'),
         style: 'destructive',
         onPress: () => removeFromQueue(trackId),
       },
@@ -43,10 +43,10 @@ const QueueScreen = ({ navigation }: any) => {
 
   const handleClearQueue = () => {
     if (queue.length === 0) return;
-    Alert.alert('Limpiar cola', '¿Eliminar todas las canciones de la cola?', [
-      { text: 'Cancelar', style: 'cancel' },
+    Alert.alert(t('deleteTrack'), t('deleteTrackConfirm'), [
+      { text: t('cancel'), style: 'cancel' },
       {
-        text: 'Limpiar',
+        text: t('delete'),
         style: 'destructive',
         onPress: () => clearQueue(),
       },

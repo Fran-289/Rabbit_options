@@ -92,14 +92,14 @@ const SettingsScreen = ({ navigation }: any) => {
       setShowResetModal(false);
       const valid = await VaultService.verifyPin(newPin);
       if (valid) { doReset(); }
-      else { Alert.alert('Error', 'PIN incorrecto'); }
+      else { Alert.alert('Error', t('errorPinIncorrect')); }
     }
   };
 
   const doReset = async () => {
     await SettingsService.resetSettings();
     reloadSettings();
-    Alert.alert('Hecho', 'Configuración restablecida');
+    Alert.alert('Hecho', t('resetConfig'));
   };
 
   const getThemeLabel = () => settings.theme === 'dark' ? t('dark') : settings.theme === 'light' ? t('light') : t('system');
@@ -230,7 +230,7 @@ const SettingsScreen = ({ navigation }: any) => {
             <View style={[styles.settingItem, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
               <View style={styles.settingLeft}>
                 <View style={[styles.iconBg, { backgroundColor: '#607D8B20' }]}>
-                  <Icon name="information-circle" size={22} color="#607D8B" />
+                  <Icon name="information-circle" size={22} color={colors.textMuted} />
                 </View>
                 <Text style={[styles.settingText, { color: colors.text }]}>{t('version')}</Text>
               </View>
@@ -243,12 +243,12 @@ const SettingsScreen = ({ navigation }: any) => {
 
             <View style={[styles.settingItem, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
               <View style={styles.settingLeft}>
-                <View style={[styles.iconBg, { backgroundColor: '#E91E6320' }]}>
-                  <Icon name="person" size={22} color="#E91E63" />
+                <View style={[styles.iconBg, { backgroundColor: `${colors.accent}20` }]}>
+                  <Icon name="person" size={22} color={colors.accent} />
                 </View>
                 <View>
                   <Text style={[styles.settingText, { color: colors.text }]}>Francisco Ayala</Text>
-                  <Text style={[styles.settingValue, { color: colors.textMuted, marginTop: 2 }]}>Desarrollador</Text>
+                  <Text style={[styles.settingValue, { color: colors.textMuted, marginTop: 2 }]}>{t('developer')}</Text>
                 </View>
               </View>
             </View>

@@ -14,7 +14,7 @@ const VaultHomeScreen = ({ navigation }: any) => {
   const [refreshing, setRefreshing] = useState(false);
 
   const { play } = useMusic();
-  const { colors } = useTheme();
+  const { colors, t } = useTheme();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -42,7 +42,7 @@ const VaultHomeScreen = ({ navigation }: any) => {
 
   const handleAddVideo = () => {
     Alert.alert('Agregar video', 'Selecciona una opción', [
-      { text: 'Cancelar', style: 'cancel' },
+      { text: t('cancel'), style: 'cancel' },
       {
         text: 'Galería',
         onPress: async () => {
@@ -68,7 +68,7 @@ const VaultHomeScreen = ({ navigation }: any) => {
             }
           } catch (error) {
             console.error('Error picking video:', error);
-            Alert.alert('Error', 'No se pudo agregar el video');
+            Alert.alert(t('errorGeneric'), t('errorCouldNotAddVideo'));
           }
         },
       },
@@ -76,17 +76,17 @@ const VaultHomeScreen = ({ navigation }: any) => {
   };
 
   const handleDeleteVideo = (video: VaultVideo) => {
-    Alert.alert('Eliminar video', `¿Eliminar "${video.title}" del cofre?`, [
-      { text: 'Cancelar', style: 'cancel' },
+    Alert.alert(t('deleteTrack'), `¿Eliminar "${video.title}" del cofre?`, [
+      { text: t('cancel'), style: 'cancel' },
       {
-        text: 'Eliminar',
+        text: t('delete'),
         style: 'destructive',
         onPress: async () => {
           try {
             await VaultService.removeVideo(video.id);
             setVideos(videos.filter(v => v.id !== video.id));
           } catch (error) {
-            Alert.alert('Error', 'No se pudo eliminar');
+            Alert.alert(t('errorGeneric'), t('errorCouldNotDelete'));
           }
         },
       },

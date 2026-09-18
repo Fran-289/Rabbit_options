@@ -97,17 +97,17 @@ const DownloadsScreen = ({ navigation }: any) => {
   };
 
   const handleDelete = (track: DownloadedTrack) => {
-    Alert.alert('Eliminar canción', `¿Eliminar "${track.name}"?`, [
-      { text: 'Cancelar', style: 'cancel' },
+    Alert.alert(t('deleteTrack'), `¿Eliminar "${track.name}"?`, [
+      { text: t('cancel'), style: 'cancel' },
       {
-        text: 'Eliminar',
+        text: t('delete'),
         style: 'destructive',
         onPress: async () => {
           try {
             await RNFS.unlink(track.path);
             setTracks(tracks.filter(t => t.id !== track.id));
           } catch (error) {
-            Alert.alert('Error', 'No se pudo eliminar');
+            Alert.alert(t('errorGeneric'), t('errorCouldNotDelete'));
           }
         },
       },

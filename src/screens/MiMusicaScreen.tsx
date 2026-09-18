@@ -89,10 +89,10 @@ const MiMusicaScreen = ({ navigation }: any) => {
   };
 
   const handleDeletePlaylist = (playlist: Playlist) => {
-    Alert.alert('Eliminar lista', `Eliminar "${playlist.name}"?`, [
+    Alert.alert(t('deleteTrack'), `Eliminar "${playlist.name}"?`, [
       { text: t('cancel'), style: 'cancel' },
       {
-        text: 'Eliminar', style: 'destructive',
+        text: t('delete'), style: 'destructive',
         onPress: async () => {
           await PlaylistService.deletePlaylist(playlist.id);
           setPlaylists(PlaylistService.getPlaylists());
@@ -196,7 +196,7 @@ const MiMusicaScreen = ({ navigation }: any) => {
           if (count > 0) {
             const plTracks = getPlaylistTracks(item);
             if (plTracks.length === 0) {
-              Alert.alert('Error', 'No se encontraron las canciones en el dispositivo');
+              Alert.alert(t('errorGeneric'), t('errorNoTracksFound'));
               return;
             }
             setQueue(plTracks, 0);

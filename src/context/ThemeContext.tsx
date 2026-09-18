@@ -111,6 +111,15 @@ const translations: Record<string, Record<string, string>> = {
     confirmPattern: 'Confirma el patrón',
     createPin: 'Crea tu PIN',
     confirmPin: 'Confirma el PIN',
+    errorPatternIncorrect: 'Patrón incorrecto',
+    errorPatternsNotMatch: 'Los patrones no coinciden',
+    errorPinIncorrect: 'PIN incorrecto',
+    errorPatternOrPinIncorrect: 'Patrón o PIN incorrectos',
+    confirmDrawPattern: 'Dibuja el patrón nuevamente',
+    patternConfigured: 'Patrón configurado. Ahora configura tu PIN.',
+    pinConfirmAgain: 'Ingresa el PIN nuevamente',
+    errorPatternTooShort: 'El patrón debe tener al menos 4 puntos',
+    errorPinTooShort: 'El PIN debe tener 4 dígitos',
     wifiRequired: 'WiFi requerido',
     wifiRequiredMsg: 'Tienes activada la opción "Solo WiFi" para descargas. Conectate a una red WiFi o desactiva esta opción en Configuración.',
     goToSettings: 'Ir a Configuración',
@@ -134,6 +143,33 @@ const translations: Record<string, Record<string, string>> = {
     errorDownloadLink: 'No se pudo descargar desde ese enlace',
     errorVerifyConnection: 'No se pudo descargar el archivo. Verifica tu conexión.',
     playNow: 'Reproducir ahora',
+    errorGeneric: 'Error',
+    errorCouldNotDelete: 'No se pudo eliminar',
+    errorCouldNotOpen: 'No se pudo abrir',
+    errorCouldNotAddVideo: 'No se pudo agregar el video',
+    errorCouldNotSearch: 'No se pudieron buscar videos',
+    errorCouldNotDownload: 'No se pudo descargar',
+    errorCouldNotDownloadFile: 'No se pudo descargar el archivo. Verifica tu conexión.',
+    errorNoTracksFound: 'No se encontraron las canciones en el dispositivo',
+    errorCouldNotLoad: 'No se pudo cargar',
+    delete: 'Eliminar',
+    cancel: 'Cancelar',
+    deleteTrack: 'Eliminar canción',
+    deleteTrackConfirm: '¿Eliminar esta canción de la cola?',
+    deletePlaylist: 'Eliminar playlist',
+    deletePlaylistConfirm: '¿Eliminar esta playlist?',
+    createPlaylist: 'Crear playlist',
+    playlistName: 'Nombre de la playlist',
+    addToPlaylist: 'Agregar a playlist',
+    noTracksInPlaylist: 'No hay canciones en la playlist',
+    playlistEmpty: 'Playlist vacía',
+    errorCreatingPlaylist: 'Error al crear playlist',
+    downloading: 'Descargando...',
+    downloadingFile: 'Descargando archivo...',
+    loading: 'Cargando...',
+    noResults: 'Sin resultados',
+    exploreSongs: 'Explora canciones',
+    playing: 'Reproduciendo',
   },
   en: {
     welcome: 'Welcome',
@@ -174,6 +210,15 @@ const translations: Record<string, Record<string, string>> = {
     confirmPattern: 'Confirm the pattern',
     createPin: 'Create your PIN',
     confirmPin: 'Confirm the PIN',
+    errorPatternIncorrect: 'Pattern incorrect',
+    errorPatternsNotMatch: 'Patterns do not match',
+    errorPinIncorrect: 'PIN incorrect',
+    errorPatternOrPinIncorrect: 'Pattern or PIN incorrect',
+    confirmDrawPattern: 'Draw the pattern again',
+    patternConfigured: 'Pattern configured. Now set your PIN.',
+    pinConfirmAgain: 'Enter PIN again',
+    errorPatternTooShort: 'Pattern must have at least 4 points',
+    errorPinTooShort: 'PIN must have 4 digits',
     wifiRequired: 'WiFi required',
     wifiRequiredMsg: 'You have "WiFi only" enabled for downloads. Connect to a WiFi network or disable this option in Settings.',
     goToSettings: 'Go to Settings',
@@ -197,12 +242,39 @@ const translations: Record<string, Record<string, string>> = {
     errorDownloadLink: 'Could not download from that link',
     errorVerifyConnection: 'Could not download the file. Check your connection.',
     playNow: 'Play now',
+    errorGeneric: 'Error',
+    errorCouldNotDelete: 'Could not delete',
+    errorCouldNotOpen: 'Could not open',
+    errorCouldNotAddVideo: 'Could not add video',
+    errorCouldNotSearch: 'Could not search videos',
+    errorCouldNotDownload: 'Could not download',
+    errorCouldNotDownloadFile: 'Could not download file. Check your connection.',
+    errorNoTracksFound: 'No tracks found on device',
+    errorCouldNotLoad: 'Could not load',
+    delete: 'Delete',
+    cancel: 'Cancel',
+    deleteTrack: 'Delete track',
+    deleteTrackConfirm: 'Remove this track from the queue?',
+    deletePlaylist: 'Delete playlist',
+    deletePlaylistConfirm: 'Delete this playlist?',
+    createPlaylist: 'Create playlist',
+    playlistName: 'Playlist name',
+    addToPlaylist: 'Add to playlist',
+    noTracksInPlaylist: 'No tracks in playlist',
+    playlistEmpty: 'Playlist empty',
+    errorCreatingPlaylist: 'Error creating playlist',
+    downloading: 'Downloading...',
+    downloadingFile: 'Downloading file...',
+    loading: 'Loading...',
+    noResults: 'No results',
+    exploreSongs: 'Explore songs',
+    playing: 'Playing',
   },
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [settings, setSettings] = useState<AppSettings>(SettingsService.getSettings());
-
+  const [loaded, setLoaded] = useState(false);
   const [colorScheme, setColorScheme] = useState(Appearance.getColorScheme());
 
   useEffect(() => {
@@ -222,6 +294,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const loadSettings = async () => {
     const s = await SettingsService.loadSettings();
     setSettings({ ...s });
+    setLoaded(true);
   };
 
   const isDark = settings.theme === 'dark' ||
@@ -233,6 +306,8 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const t = (key: string): string => {
     return translations[lang]?.[key] || translations['es']?.[key] || key;
   };
+
+  if (!loaded) return null;
 
   return (
     <ThemeContext.Provider value={{ colors, settings, isDark, t, reloadSettings: loadSettings }}>

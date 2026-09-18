@@ -34,7 +34,7 @@ const SearchScreen = ({ navigation }: any) => {
   const downloadScale = useRef(new Animated.Value(0.8)).current;
 
   const { play } = useMusic();
-  const { colors } = useTheme();
+  const { colors, t } = useTheme();
 
   useEffect(() => {
     loadSearchHistory();
@@ -60,7 +60,7 @@ const SearchScreen = ({ navigation }: any) => {
       setResults(response.videos);
       setNextPageToken(response.nextPageToken);
     } catch (error) {
-      Alert.alert('Error', 'No se pudieron buscar videos');
+      Alert.alert(t('errorGeneric'), t('errorCouldNotSearch'));
     }
     setLoading(false);
   };
@@ -71,10 +71,10 @@ const SearchScreen = ({ navigation }: any) => {
   };
 
   const handleClearHistory = async () => {
-    Alert.alert('Limpiar historial', '¿Eliminar todo el historial de búsquedas?', [
-      { text: 'Cancelar', style: 'cancel' },
+    Alert.alert(t('clearCache'), t('deleteTrackConfirm'), [
+      { text: t('cancel'), style: 'cancel' },
       {
-        text: 'Limpiar',
+        text: t('delete'),
         style: 'destructive',
         onPress: async () => {
           await SearchHistoryService.clearHistory();
@@ -106,11 +106,11 @@ const SearchScreen = ({ navigation }: any) => {
       const state = await NetInfoModule.fetch();
       if (!state.isConnected || state.type !== 'wifi') {
         Alert.alert(
-          'WiFi requerido',
-          'Tienes activada la opción "Solo WiFi" para descargas. Conectate a una red WiFi o desactiva esta opción en Configuración.',
+          t('wifiRequired'),
+          t('wifiRequiredMsg'),
           [
-            { text: 'Cancelar', style: 'cancel' },
-            { text: 'Ir a Configuración', onPress: () => navigation.navigate('Settings') },
+            { text: t('cancel'), style: 'cancel' },
+            { text: t('goToSettings'), onPress: () => navigation.navigate('Settings') },
           ]
         );
         return;
@@ -190,7 +190,7 @@ const SearchScreen = ({ navigation }: any) => {
         );
       }
     } catch (error) {
-      Alert.alert('Error', 'No se pudo descargar el archivo. Verifica tu conexión.');
+      Alert.alert(t('errorGeneric'), t('errorCouldNotDownloadFile'));
     }
 
     Animated.parallel([

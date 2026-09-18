@@ -17,7 +17,7 @@ const VaultAuthScreen = ({ navigation }: any) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [hasPattern, setHasPattern] = useState(false);
   const [hasPin, setHasPin] = useState(false);
-  const { colors } = useTheme();
+  const { colors, t } = useTheme();
 
   useEffect(() => {
     checkVaultSetup();
@@ -55,7 +55,7 @@ const VaultAuthScreen = ({ navigation }: any) => {
         if (valid) {
           navigation.navigate('VaultHome');
         } else {
-          Alert.alert('Error', 'Patron incorrecto');
+          Alert.alert('Error', t('errorPatternIncorrect'));
           setPattern([]);
         }
       }
@@ -66,13 +66,13 @@ const VaultAuthScreen = ({ navigation }: any) => {
             setConfirmPattern(newPattern);
             setIsConfirming(true);
             setPattern([]);
-            Alert.alert('Confirma', 'Dibuja el patron nuevamente');
+            Alert.alert(t('confirm'), t('confirmDrawPattern'));
           }, 300);
         } else if (isConfirming && newPattern.length >= 4) {
           const match = JSON.stringify(newPattern) === JSON.stringify(confirmPattern);
           if (match) {
             await VaultService.saveCredentials(confirmPattern, '');
-            Alert.alert('Exito', 'Patron configurado. Ahora configura tu PIN.');
+            Alert.alert(t('confirm'), t('patternConfigured'));
             setHasPattern(true);
             setSetupStep('pin');
             setAuthMode('pin');
@@ -80,7 +80,7 @@ const VaultAuthScreen = ({ navigation }: any) => {
             setPattern([]);
             setConfirmPattern([]);
           } else {
-            Alert.alert('Error', 'Los patrones no coinciden');
+            Alert.alert('Error', t('errorPatternsNotMatch'));
             setPattern([]);
             setConfirmPattern([]);
             setIsConfirming(false);
@@ -101,7 +101,7 @@ const VaultAuthScreen = ({ navigation }: any) => {
         if (valid) {
           navigation.navigate('VaultHome');
         } else {
-          Alert.alert('Error', 'PIN incorrecto');
+          Alert.alert('Error', t('errorPinIncorrect'));
           setPin('');
         }
       } else {
@@ -111,7 +111,7 @@ const VaultAuthScreen = ({ navigation }: any) => {
               setConfirmPin(newPin);
               setIsConfirming(true);
               setPin('');
-              Alert.alert('Confirma', 'Ingresa el PIN nuevamente');
+              Alert.alert(t('confirm'), t('pinConfirmAgain'));
             }, 300);
           } else {
             if (newPin === confirmPin) {
@@ -122,7 +122,7 @@ const VaultAuthScreen = ({ navigation }: any) => {
               setHasPin(true);
               navigation.navigate('VaultHome');
             } else {
-              Alert.alert('Error', 'Los PINs no coinciden');
+              Alert.alert('Error', t('errorPatternsNotMatch'));
               setPin('');
               setConfirmPin('');
               setIsConfirming(false);
@@ -146,8 +146,8 @@ const VaultAuthScreen = ({ navigation }: any) => {
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <View style={styles.container}>
           <View style={styles.loadingContainer}>
-            <Icon name="lock-closed" size={50} color="#E91E63" />
-            <Text style={styles.loadingText}>Verificando...</Text>
+            <Icon name="lock-closed" size={50} color={colors.accent} />
+            <Text style={[styles.loadingText, { color: colors.text }]}>{t('verifying') || 'Verificando...'}</Text>
           </View>
         </View>
       </SafeAreaView>
@@ -160,16 +160,16 @@ const VaultAuthScreen = ({ navigation }: any) => {
 
   const getTitle = () => {
     if (isVerifying) {
-      return showPattern ? 'Dibuja tu patron' : 'Ingresa tu PIN';
+      return showPattern ? 'Dibuja tu patron' : t('createPin');
     }
     if (isConfirming) {
-      return setupStep === 'pattern' ? 'Confirma el patron' : 'Confirma el PIN';
+      return setupStep === 'pattern' ? t('confirmPattern') : t('confirmPin');
     }
-    return setupStep === 'pattern' ? 'Crea tu patron' : 'Crea tu PIN';
+    return setupStep === 'pattern' ? 'Crea tu patron' : t('createPin');
   };
 
   const getSubtitle = () => {
-    if (isVerifying) return 'Usa patron o PIN para acceder';
+    if (isVerifying) return t('patternOrPin');
     if (isConfirming) return 'Repite para confirmar';
     return setupStep === 'pattern' ? 'Minimo 4 puntos' : 'Minimo 4 digitos';
   };

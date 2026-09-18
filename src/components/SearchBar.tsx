@@ -68,7 +68,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           style={[styles.searchButton, { backgroundColor: colors.primary }, !value.trim() && { backgroundColor: colors.surfaceLight }]}
           onPress={handleSubmit}
           disabled={!value.trim()}>
-          <Icon name="arrow-forward" size={20} color="#fff" />
+          <Icon name="arrow-forward" size={20} color={colors.text} />
         </TouchableOpacity>
       )}
     </View>
@@ -85,14 +85,12 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#282828',
     borderRadius: 10,
     paddingHorizontal: 15,
     height: 50,
   },
   input: {
     flex: 1,
-    color: '#fff',
     fontSize: 16,
     marginLeft: 10,
   },
@@ -100,7 +98,6 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   searchButton: {
-    backgroundColor: '#1DB954',
     width: 50,
     height: 50,
     borderRadius: 10,
