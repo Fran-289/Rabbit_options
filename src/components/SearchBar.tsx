@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useTheme } from '../context/ThemeContext';
 
 interface SearchBarProps {
   placeholder?: string;
@@ -26,6 +27,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [internalValue, setInternalValue] = useState('');
   const value = externalValue !== undefined ? externalValue : internalValue;
   const onChangeText = externalOnChangeText || setInternalValue;
+  const { colors } = useTheme();
 
   const handleSubmit = useCallback(() => {
     if (value.trim()) {
@@ -39,12 +41,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <Icon name="search" size={20} color="#535353" />
+      <View style={[styles.inputContainer, { backgroundColor: colors.inputBg }]}>
+        <Icon name="search" size={20} color={colors.textMuted} />
         <TextInput
-          style={styles.input}
+          style={[styles.input, { color: colors.text }]}
           placeholder={placeholder}
-          placeholderTextColor="#535353"
+          placeholderTextColor={colors.textMuted}
           value={value}
           onChangeText={onChangeText}
           onSubmitEditing={handleSubmit}
@@ -54,16 +56,16 @@ const SearchBar: React.FC<SearchBarProps> = ({
         />
         {value.length > 0 && (
           <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
-            <Icon name="close-circle" size={18} color="#535353" />
+            <Icon name="close-circle" size={18} color={colors.textMuted} />
           </TouchableOpacity>
         )}
       </View>
 
       {loading ? (
-        <ActivityIndicator size="small" color="#1DB954" style={styles.loadingIndicator} />
+        <ActivityIndicator size="small" color={colors.primary} style={styles.loadingIndicator} />
       ) : (
         <TouchableOpacity
-          style={[styles.searchButton, !value.trim() && styles.searchButtonDisabled]}
+          style={[styles.searchButton, { backgroundColor: colors.primary }, !value.trim() && { backgroundColor: colors.surfaceLight }]}
           onPress={handleSubmit}
           disabled={!value.trim()}>
           <Icon name="arrow-forward" size={20} color="#fff" />

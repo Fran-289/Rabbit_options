@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import VaultService, { VaultVideo } from '../../services/vaultService';
 import { useMusic } from '../../context/MusicContext';
+import { useTheme } from '../../context/ThemeContext';
+import { formatSize } from '../../utils/helpers';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 const VaultHomeScreen = ({ navigation }: any) => {
@@ -12,6 +14,7 @@ const VaultHomeScreen = ({ navigation }: any) => {
   const [refreshing, setRefreshing] = useState(false);
 
   const { play } = useMusic();
+  const { colors } = useTheme();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -100,57 +103,50 @@ const VaultHomeScreen = ({ navigation }: any) => {
     navigation.navigate('Player');
   };
 
-  const formatSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-    return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
-  };
-
   const renderVideoItem = ({ item }: { item: VaultVideo }) => (
-    <TouchableOpacity style={styles.videoItem} onPress={() => handlePlayVideo(item)}>
-      <View style={styles.videoThumbnail}>
-        <Icon name="videocam" size={30} color="#E91E63" />
+    <TouchableOpacity style={[styles.videoItem, { backgroundColor: colors.surface }]} onPress={() => handlePlayVideo(item)}>
+      <View style={[styles.videoThumbnail, { backgroundColor: colors.surfaceLight }]}>
+        <Icon name="videocam" size={30} color={colors.accent} />
       </View>
       <View style={styles.videoInfo}>
-        <Text style={styles.videoName} numberOfLines={1}>{item.title}</Text>
-        <Text style={styles.videoMeta}>
+        <Text style={[styles.videoName, { color: colors.text }]} numberOfLines={1}>{item.title}</Text>
+        <Text style={[styles.videoMeta, { color: colors.textMuted }]}>
           {formatSize(item.size)} • {new Date(item.addedAt).toLocaleDateString()}
         </Text>
       </View>
       <TouchableOpacity style={styles.playBtn}>
-        <Icon name="play-circle" size={36} color="#1DB954" />
+        <Icon name="play-circle" size={36} color={colors.primary} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.moreBtn} onPress={() => handleDeleteVideo(item)}>
-        <Icon name="trash-outline" size={20} color="#E91E63" />
+        <Icon name="trash-outline" size={20} color={colors.danger} />
       </TouchableOpacity>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <View style={styles.container}>
-        <View style={styles.header}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top']}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon name="chevron-back" size={28} color="#fff" />
+            <Icon name="chevron-back" size={28} color={colors.text} />
           </TouchableOpacity>
           <View style={styles.headerTitleContainer}>
-            <Icon name="lock-closed" size={20} color="#E91E63" />
-            <Text style={styles.title}>Mi Cofre</Text>
+            <Icon name="lock-closed" size={20} color={colors.accent} />
+            <Text style={[styles.title, { color: colors.text }]}>Mi Cofre</Text>
           </View>
-          <TouchableOpacity style={styles.addBtn} onPress={handleAddVideo}>
+          <TouchableOpacity style={[styles.addBtn, { backgroundColor: colors.accent }]} onPress={handleAddVideo}>
             <Icon name="add" size={28} color="#fff" />
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.subtitle}>
+        <Text style={[styles.subtitle, { color: colors.textMuted }]}>
           Videos privados protegidos con patrón y PIN
         </Text>
 
         {loading ? (
           <View style={styles.loadingContainer}>
-            <Icon name="lock-closed" size={60} color="#E91E63" />
-            <Text style={styles.loadingText}>Cargando videos...</Text>
+            <Icon name="lock-closed" size={60} color={colors.accent} />
+            <Text style={[styles.loadingText, { color: colors.textMuted }]}>Cargando videos...</Text>
           </View>
         ) : (
           <FlatList
@@ -162,21 +158,21 @@ const VaultHomeScreen = ({ navigation }: any) => {
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                tintColor="#E91E63"
-                colors={['#E91E63']}
+                tintColor={colors.accent}
+                colors={[colors.accent]}
               />
             }
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
-                <View style={styles.emptyIconContainer}>
-                  <Icon name="shield-checkmark" size={80} color="#E91E63" />
+                <View style={[styles.emptyIconContainer, { backgroundColor: `${colors.accent}15` }]}>
+                  <Icon name="shield-checkmark" size={80} color={colors.accent} />
                 </View>
-                <Text style={styles.emptyTitle}>Cofre seguro</Text>
-                <Text style={styles.emptySubtitle}>
+                <Text style={[styles.emptyTitle, { color: colors.text }]}>Cofre seguro</Text>
+                <Text style={[styles.emptySubtitle, { color: colors.textMuted }]}>
                   Tus videos privados estarán protegidos aquí.{'\n'}
                   Nadie podrá acceder sin tu patrón y PIN.
                 </Text>
-                <TouchableOpacity style={styles.addVideoBtn} onPress={handleAddVideo}>
+                <TouchableOpacity style={[styles.addVideoBtn, { backgroundColor: colors.accent }]} onPress={handleAddVideo}>
                   <Icon name="add-circle" size={24} color="#fff" />
                   <Text style={styles.addVideoBtnText}>Agregar primer video</Text>
                 </TouchableOpacity>
@@ -190,48 +186,48 @@ const VaultHomeScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#121212' },
-  container: { flex: 1, backgroundColor: '#121212' },
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: 20, paddingVertical: 15,
   },
   headerTitleContainer: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  title: { fontSize: 20, fontWeight: 'bold', color: '#fff' },
-  addBtn: { padding: 8, backgroundColor: '#E91E63', borderRadius: 20 },
+  title: { fontSize: 20, fontWeight: 'bold' },
+  addBtn: { padding: 8, borderRadius: 20 },
   subtitle: {
-    color: '#535353', fontSize: 13, textAlign: 'center',
+    fontSize: 13, textAlign: 'center',
     paddingHorizontal: 40, marginBottom: 20,
   },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  loadingText: { color: '#535353', marginTop: 15, fontSize: 16 },
+  loadingText: { marginTop: 15, fontSize: 16 },
   listContent: { padding: 15 },
   videoItem: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#181818',
+    flexDirection: 'row', alignItems: 'center',
     padding: 12, borderRadius: 12, marginBottom: 10,
   },
   videoThumbnail: {
-    width: 80, height: 50, backgroundColor: '#282828',
+    width: 80, height: 50,
     borderRadius: 8, justifyContent: 'center', alignItems: 'center',
   },
   videoInfo: { flex: 1, marginLeft: 12 },
-  videoName: { color: '#fff', fontSize: 14, fontWeight: '500' },
-  videoMeta: { color: '#535353', fontSize: 12, marginTop: 4 },
+  videoName: { fontSize: 14, fontWeight: '500' },
+  videoMeta: { fontSize: 12, marginTop: 4 },
   playBtn: { padding: 8 },
   moreBtn: { padding: 10 },
   emptyContainer: { alignItems: 'center', marginTop: 80 },
   emptyIconContainer: {
     width: 140, height: 140, borderRadius: 70,
-    backgroundColor: '#E91E6315', justifyContent: 'center', alignItems: 'center',
+    justifyContent: 'center', alignItems: 'center',
     marginBottom: 25,
   },
-  emptyTitle: { color: '#fff', fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
+  emptyTitle: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
   emptySubtitle: {
-    color: '#535353', fontSize: 14, textAlign: 'center',
+    fontSize: 14, textAlign: 'center',
     lineHeight: 22, marginBottom: 30,
   },
   addVideoBtn: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#E91E63',
+    flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 24, paddingVertical: 14, borderRadius: 25, gap: 8,
   },
   addVideoBtnText: { color: '#fff', fontSize: 16, fontWeight: '600' },

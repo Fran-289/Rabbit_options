@@ -18,7 +18,6 @@ const HomeScreen = ({ navigation }: any) => {
   const { colors, t } = useTheme();
   const [downloadCount, setDownloadCount] = useState(0);
   const [videoCount, setVideoCount] = useState(0);
-  const [localCount, setLocalCount] = useState(0);
   const headerOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -146,8 +145,8 @@ const HomeScreen = ({ navigation }: any) => {
           </View>
 
           <FadeInView delay={500} duration={500}>
-            <View style={styles.infoSection}>
-              <Text style={styles.infoTitle}>Cómo funciona</Text>
+            <View style={[styles.infoSection, { backgroundColor: colors.surface }]}>
+              <Text style={[styles.infoTitle, { color: colors.text }]}>Cómo funciona</Text>
               {steps.map((step, index) => (
                 <SlideInView
                   key={index}
@@ -155,10 +154,10 @@ const HomeScreen = ({ navigation }: any) => {
                   delay={600 + index * 100}
                   duration={400}>
                   <View style={styles.infoItem}>
-                    <View style={styles.infoStep}>
+                    <View style={[styles.infoStep, { backgroundColor: colors.primary }]}>
                       <Text style={styles.stepNumber}>{index + 1}</Text>
                     </View>
-                    <Text style={styles.infoText}>{step}</Text>
+                    <Text style={[styles.infoText, { color: colors.textSecondary }]}>{step}</Text>
                   </View>
                 </SlideInView>
               ))}
@@ -171,16 +170,16 @@ const HomeScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#121212' },
-  container: { flex: 1, backgroundColor: '#121212' },
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start',
     paddingHorizontal: 20, paddingVertical: 15,
   },
-  greeting: { fontSize: 28, fontWeight: 'bold', color: '#fff' },
-  headerSub: { fontSize: 14, color: '#b3b3b3', marginTop: 4 },
-  headerSub2: { fontSize: 13, color: '#1DB954', marginTop: 2, fontWeight: '500' },
-  settingsBtn: { padding: 10, backgroundColor: '#181818', borderRadius: 25 },
+  greeting: { fontSize: 28, fontWeight: 'bold' },
+  headerSub: { fontSize: 14, marginTop: 4 },
+  headerSub2: { fontSize: 13, marginTop: 2, fontWeight: '500' },
+  settingsBtn: { padding: 10, borderRadius: 25 },
   scrollView: { flex: 1 },
   quickActions: {
     paddingHorizontal: 15, paddingTop: 10,
@@ -189,26 +188,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between', marginBottom: 0,
   },
   actionButton: {
-    backgroundColor: '#181818', padding: 16, borderRadius: 16,
+    padding: 16, borderRadius: 16,
     marginBottom: 10, width: '48%',
   },
   iconCircle: {
     width: 50, height: 50, borderRadius: 25,
     justifyContent: 'center', alignItems: 'center', marginBottom: 12,
   },
-  actionText: { color: '#fff', fontSize: 15, fontWeight: '600' },
-  actionCount: { color: '#535353', fontSize: 12, marginTop: 4 },
+  actionText: { fontSize: 15, fontWeight: '600' },
+  actionCount: { fontSize: 12, marginTop: 4 },
   infoSection: {
-    backgroundColor: '#181818', borderRadius: 16, padding: 18, margin: 15,
+    borderRadius: 16, padding: 18, margin: 15,
   },
-  infoTitle: { color: '#fff', fontSize: 17, fontWeight: '600', marginBottom: 18 },
+  infoTitle: { fontSize: 17, fontWeight: '600', marginBottom: 18 },
   infoItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
   infoStep: {
-    width: 26, height: 26, borderRadius: 13, backgroundColor: '#1DB954',
+    width: 26, height: 26, borderRadius: 13,
     justifyContent: 'center', alignItems: 'center', marginRight: 12,
   },
   stepNumber: { color: '#fff', fontSize: 13, fontWeight: 'bold' },
-  infoText: { color: '#b3b3b3', fontSize: 13, flex: 1 },
+  infoText: { fontSize: 13, flex: 1 },
 });
 
 export default HomeScreen;

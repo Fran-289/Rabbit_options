@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -17,6 +17,7 @@ import VaultAuthScreen from '../screens/Vault/VaultAuthScreen';
 import VaultHomeScreen from '../screens/Vault/VaultHomeScreen';
 import PlayerControl from '../components/PlayerControl';
 import { useMusic } from '../context/MusicContext';
+import { useTheme } from '../context/ThemeContext';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -63,61 +64,83 @@ const LocalStack = () => (
   </Stack.Navigator>
 );
 
-const AppNavigator = () => {
+const AppContent = () => {
   const { currentTrack } = useMusic();
+  const { colors } = useTheme();
+  const navigation = useNavigation<any>();
+
+  const handleMiniPlayerPress = () => {
+    const state = navigation.getState();
+    if (state && state.routes) {
+      const activeRoute = state.routes[state.index];
+      if (activeRoute?.name) {
+        navigation.navigate(activeRoute.name, {
+          screen: 'Player',
+        });
+      }
+    }
+  };
 
   return (
-    <NavigationContainer>
-      <View style={styles.container}>
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => {
-              let iconName: string;
-              switch (route.name) {
-                case 'Inicio':
-                  iconName = focused ? 'home' : 'home-outline';
-                  break;
-                case 'Buscar':
-                  iconName = focused ? 'search' : 'search-outline';
-                  break;
-                case 'Descargas':
-                  iconName = focused ? 'download' : 'download-outline';
-                  break;
-                case 'Local':
-                  iconName = focused ? 'folder' : 'folder-outline';
-                  break;
-                case 'Cofre':
-                  iconName = focused ? 'lock-closed' : 'lock-closed-outline';
-                  break;
-                default:
-                  iconName = 'ellipse';
-              }
-              return <Icon name={iconName} size={size} color={color} />;
-            },
-            tabBarActiveTintColor: '#1DB954',
-            tabBarInactiveTintColor: 'gray',
-            headerStyle: { backgroundColor: '#121212' },
-            headerTintColor: '#fff',
-            tabBarStyle: {
-              backgroundColor: '#181818',
-              borderTopColor: '#282828',
-              paddingBottom: 5,
-              height: 60,
-            },
-          })}>
-          <Tab.Screen name="Inicio" component={HomeStack} options={{ headerShown: false }} />
-          <Tab.Screen name="Buscar" component={SearchStack} options={{ headerShown: false }} />
-          <Tab.Screen name="Descargas" component={DownloadsStack} options={{ headerShown: false }} />
-          <Tab.Screen name="Local" component={LocalStack} options={{ headerShown: false }} />
-          <Tab.Screen
-            name="Cofre"
-            component={VaultNavigator}
-            options={{ headerShown: false }}
-          />
-        </Tab.Navigator>
+    <View style={styles.container}>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName: string;
+            switch (route.name) {
+              case 'Inicio':
+                iconName = focused ? 'home' : 'home-outline';
+                break;
+              case 'Buscar':
+                iconName = focused ? 'search' : 'search-outline';
+                break;
+              case 'Descargas':
+                iconName = focused ? 'download' : 'download-outline';
+                break;
+              case 'Local':
+                iconName = focused ? 'folder' : 'folder-outline';
+                break;
+              case 'Cofre':
+                iconName = focused ? 'lock-closed' : 'lock-closed-outline';
+                break;
+              default:
+                iconName = 'ellipse';
+            }
+            return <Icon name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: colors.primary,
+          tabBarInactiveTintColor: colors.textMuted,
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.text,
+          tabBarStyle: {
+            backgroundColor: colors.tabBar,
+            borderTopColor: colors.border,
+            paddingBottom: 5,
+            height: 60,
+          },
+        })}>
+        <Tab.Screen name="Inicio" component={HomeStack} options={{ headerShown: false }} />
+        <Tab.Screen name="Buscar" component={SearchStack} options={{ headerShown: false }} />
+        <Tab.Screen name="Descargas" component={DownloadsStack} options={{ headerShown: false }} />
+        <Tab.Screen name="Local" component={LocalStack} options={{ headerShown: false }} />
+        <Tab.Screen
+          name="Cofre"
+          component={VaultNavigator}
+          options={{ headerShown: false }}
+        />
+      </Tab.Navigator>
 
-        {currentTrack && <PlayerControl mini={true} />}
-      </View>
+      {currentTrack && (
+        <PlayerControl mini={true} onNavigateToPlayer={handleMiniPlayerPress} />
+      )}
+    </View>
+  );
+};
+
+const AppNavigator = () => {
+  return (
+    <NavigationContainer>
+      <AppContent />
     </NavigationContainer>
   );
 };

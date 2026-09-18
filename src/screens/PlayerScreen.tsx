@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Video, { OnProgressData, OnLoadData } from 'react-native-video';
 import { useMusic } from '../context/MusicContext';
+import { useTheme } from '../context/ThemeContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -39,6 +40,7 @@ const PlayerScreen = ({ navigation }: any) => {
     toggleShuffle,
     cycleRepeat,
   } = useMusic();
+  const { colors } = useTheme();
 
   const videoRef = useRef<any>(null);
   const artworkScale = useRef(new Animated.Value(1)).current;
@@ -142,28 +144,28 @@ const PlayerScreen = ({ navigation }: any) => {
   };
 
   const getRepeatColor = () => {
-    return repeatMode !== 'off' ? '#1DB954' : '#fff';
+    return repeatMode !== 'off' ? colors.primary : colors.text;
   };
 
   if (!currentTrack) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-        <View style={styles.container}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: '#0a0a0a' }]} edges={['top', 'bottom']}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Icon name="chevron-down" size={32} color="#fff" />
+              <Icon name="chevron-down" size={32} color={colors.text} />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Reproduciendo</Text>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>Reproduciendo</Text>
             <View style={{ width: 32 }} />
           </View>
           <View style={styles.artworkContainer}>
-            <View style={[styles.artwork, styles.artworkEmpty]}>
-              <Icon name="musical-notes" size={80} color="#535353" />
+            <View style={[styles.artwork, styles.artworkEmpty, { backgroundColor: colors.surface }]}>
+              <Icon name="musical-notes" size={80} color={colors.textMuted} />
             </View>
           </View>
           <View style={styles.trackInfo}>
-            <Text style={styles.trackName}>Sin reproducción</Text>
-            <Text style={styles.artist}>Selecciona una canción</Text>
+            <Text style={[styles.trackName, { color: colors.text }]}>Sin reproducción</Text>
+            <Text style={[styles.artist, { color: colors.textMuted }]}>Selecciona una canción</Text>
           </View>
         </View>
       </SafeAreaView>
@@ -171,7 +173,7 @@ const PlayerScreen = ({ navigation }: any) => {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: '#0a0a0a' }]} edges={['top', 'bottom']}>
       <Video
         ref={videoRef}
         source={{ uri: `file://${currentTrack.path}` }}
@@ -186,20 +188,20 @@ const PlayerScreen = ({ navigation }: any) => {
         repeat={repeatMode === 'one'}
       />
 
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon name="chevron-down" size={32} color="#fff" />
+            <Icon name="chevron-down" size={32} color={colors.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Reproduciendo</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Reproduciendo</Text>
           <View style={styles.headerRight}>
             <TouchableOpacity
               style={styles.queueBtn}
               onPress={() => navigation.navigate('Queue')}>
-              <Icon name="list" size={24} color="#fff" />
+              <Icon name="list" size={24} color={colors.text} />
             </TouchableOpacity>
             <TouchableOpacity onPress={handleDelete}>
-              <Icon name="trash-outline" size={24} color="#E91E63" />
+              <Icon name="trash-outline" size={24} color={colors.danger} />
             </TouchableOpacity>
           </View>
         </View>
@@ -210,7 +212,7 @@ const PlayerScreen = ({ navigation }: any) => {
               styles.artwork,
               { transform: [{ scale: artworkScale }] },
             ]}>
-            <View style={styles.artworkInner}>
+            <View style={[styles.artworkInner, { backgroundColor: colors.primary }]}>
               <Icon name="musical-notes" size={80} color="#fff" />
               {isBuffering && (
                 <View style={styles.bufferingOverlay}>
@@ -222,19 +224,19 @@ const PlayerScreen = ({ navigation }: any) => {
         </View>
 
         <View style={styles.trackInfo}>
-          <Text style={styles.trackName} numberOfLines={2}>
+          <Text style={[styles.trackName, { color: colors.text }]} numberOfLines={2}>
             {currentTrack.name}
           </Text>
-          <Text style={styles.artist}>{currentTrack.source || 'Local'}</Text>
+          <Text style={[styles.artist, { color: colors.textSecondary }]}>{currentTrack.source || 'Local'}</Text>
         </View>
 
         <View style={styles.progressContainer}>
           <TouchableOpacity onPress={handleSeek} activeOpacity={1}>
-            <View style={styles.progressBar}>
+            <View style={[styles.progressBar, { backgroundColor: colors.surfaceLight }]}>
               <View
                 style={[
                   styles.progressFill,
-                  { width: `${duration > 0 ? (progress / duration) * 100 : 0}%` },
+                  { width: `${duration > 0 ? (progress / duration) * 100 : 0}%`, backgroundColor: colors.primary },
                 ]}
               />
               <View
@@ -242,14 +244,15 @@ const PlayerScreen = ({ navigation }: any) => {
                   styles.progressThumb,
                   {
                     left: `${duration > 0 ? (progress / duration) * 100 : 0}%`,
+                    backgroundColor: colors.primary,
                   },
                 ]}
               />
             </View>
           </TouchableOpacity>
           <View style={styles.timeContainer}>
-            <Text style={styles.time}>{formatTime(progress)}</Text>
-            <Text style={styles.time}>{formatTime(duration)}</Text>
+            <Text style={[styles.time, { color: colors.textSecondary }]}>{formatTime(progress)}</Text>
+            <Text style={[styles.time, { color: colors.textSecondary }]}>{formatTime(duration)}</Text>
           </View>
         </View>
 
@@ -258,18 +261,18 @@ const PlayerScreen = ({ navigation }: any) => {
             <Icon
               name="shuffle"
               size={24}
-              color={isShuffled ? '#1DB954' : '#fff'}
+              color={isShuffled ? colors.primary : colors.text}
             />
           </TouchableOpacity>
 
           <TouchableOpacity onPress={previous} style={styles.controlBtn}>
-            <Icon name="play-skip-back" size={32} color="#fff" />
+            <Icon name="play-skip-back" size={32} color={colors.text} />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.mainControlBtn}
             onPress={togglePlayPause}>
-            <View style={styles.mainControlBtnInner}>
+            <View style={[styles.mainControlBtnInner, { backgroundColor: colors.primary }]}>
               <Icon
                 name={isPlaying ? 'pause' : 'play'}
                 size={40}
@@ -279,7 +282,7 @@ const PlayerScreen = ({ navigation }: any) => {
           </TouchableOpacity>
 
           <TouchableOpacity onPress={next} style={styles.controlBtn}>
-            <Icon name="play-skip-forward" size={32} color="#fff" />
+            <Icon name="play-skip-forward" size={32} color={colors.text} />
           </TouchableOpacity>
 
           <TouchableOpacity onPress={cycleRepeat} style={styles.controlBtn}>
@@ -288,7 +291,7 @@ const PlayerScreen = ({ navigation }: any) => {
         </View>
 
         <View style={styles.volumeContainer}>
-          <Icon name="volume-low" size={20} color="#b3b3b3" />
+          <Icon name="volume-low" size={20} color={colors.textMuted} />
           <TouchableOpacity
             style={styles.volumeSlider}
             onPress={(e) => {
@@ -296,13 +299,13 @@ const PlayerScreen = ({ navigation }: any) => {
               const newVolume = Math.max(0, Math.min(1, locationX / 200));
               setVolume(newVolume);
             }}>
-            <View style={styles.volumeBar}>
+            <View style={[styles.volumeBar, { backgroundColor: colors.surfaceLight }]}>
               <View
-                style={[styles.volumeFill, { width: `${volume * 100}%` }]}
+                style={[styles.volumeFill, { width: `${volume * 100}%`, backgroundColor: colors.primary }]}
               />
             </View>
           </TouchableOpacity>
-          <Icon name="volume-high" size={20} color="#b3b3b3" />
+          <Icon name="volume-high" size={20} color={colors.textMuted} />
         </View>
       </View>
     </SafeAreaView>
@@ -312,11 +315,9 @@ const PlayerScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
   },
   container: {
     flex: 1,
-    backgroundColor: '#121212',
     paddingHorizontal: 25,
   },
   videoHidden: {
@@ -332,7 +333,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   headerTitle: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -361,7 +361,6 @@ const styles = StyleSheet.create({
     shadowRadius: 30,
   },
   artworkEmpty: {
-    backgroundColor: '#181818',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
@@ -370,7 +369,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1DB954',
   },
   bufferingOverlay: {
     position: 'absolute',
@@ -385,13 +383,11 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   trackName: {
-    color: '#fff',
     fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   artist: {
-    color: '#b3b3b3',
     fontSize: 16,
     marginTop: 8,
   },
@@ -400,13 +396,11 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 6,
-    backgroundColor: '#282828',
     borderRadius: 3,
     position: 'relative',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#1DB954',
     borderRadius: 3,
   },
   progressThumb: {
@@ -415,7 +409,6 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
     borderRadius: 7,
-    backgroundColor: '#1DB954',
     marginLeft: -7,
     elevation: 5,
     shadowColor: '#1DB954',
@@ -429,7 +422,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   time: {
-    color: '#b3b3b3',
     fontSize: 12,
   },
   mainControls: {
@@ -457,7 +449,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1DB954',
     borderRadius: 37.5,
   },
   volumeContainer: {
@@ -473,12 +464,10 @@ const styles = StyleSheet.create({
   },
   volumeBar: {
     height: 4,
-    backgroundColor: '#282828',
     borderRadius: 2,
   },
   volumeFill: {
     height: '100%',
-    backgroundColor: '#1DB954',
     borderRadius: 2,
   },
 });

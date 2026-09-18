@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Appearance } from 'react-native';
 import SettingsService, { AppSettings } from '../services/settingsService';
 
 interface ThemeColors {
@@ -107,6 +108,29 @@ const translations: Record<string, Record<string, string>> = {
     confirmPattern: 'Confirma el patrón',
     createPin: 'Crea tu PIN',
     confirmPin: 'Confirma el PIN',
+    wifiRequired: 'WiFi requerido',
+    wifiRequiredMsg: 'Tienes activada la opción "Solo WiFi" para descargas. Conectate a una red WiFi o desactiva esta opción en Configuración.',
+    goToSettings: 'Ir a Configuración',
+    viewDownloads: 'Ver descargas',
+    noPlayback: 'Sin reproducción',
+    selectSong: 'Selecciona una canción',
+    playing: 'Reproduciendo',
+    scanningFiles: 'Escaneando archivos...',
+    noMediaFound: 'No hay archivos multimedia en las carpetas del dispositivo',
+    socialNetworks: 'Redes Sociales',
+    openInApp: 'En la app',
+    externalBrowser: 'Navegador externo',
+    chooseHowToOpen: 'Como quieres abrir?',
+    linkDownload: 'Descarga por enlace',
+    pasteLinkHere: 'Pega el enlace aqui...',
+    downloadMp3: 'Descargar MP3',
+    socialBrowserDesc: 'Abre la red social dentro de la app o en el navegador externo',
+    socialBrowserInfo: 'Abre la red social dentro de la app, busca el contenido, y copia el enlace para pegarlo en la seccion de descarga.',
+    downloadComplete: 'Descarga completada',
+    downloadSavedToMusic: 'Archivo guardado en tu musica',
+    errorDownloadLink: 'No se pudo descargar desde ese enlace',
+    errorVerifyConnection: 'No se pudo descargar el archivo. Verifica tu conexión.',
+    playNow: 'Reproducir ahora',
   },
   en: {
     welcome: 'Welcome',
@@ -147,18 +171,49 @@ const translations: Record<string, Record<string, string>> = {
     confirmPattern: 'Confirm the pattern',
     createPin: 'Create your PIN',
     confirmPin: 'Confirm the PIN',
+    wifiRequired: 'WiFi required',
+    wifiRequiredMsg: 'You have "WiFi only" enabled for downloads. Connect to a WiFi network or disable this option in Settings.',
+    goToSettings: 'Go to Settings',
+    viewDownloads: 'View downloads',
+    noPlayback: 'No playback',
+    selectSong: 'Select a song',
+    playing: 'Playing',
+    scanningFiles: 'Scanning files...',
+    noMediaFound: 'No media files found in device folders',
+    socialNetworks: 'Social Networks',
+    openInApp: 'In the app',
+    externalBrowser: 'External browser',
+    chooseHowToOpen: 'How do you want to open?',
+    linkDownload: 'Download by link',
+    pasteLinkHere: 'Paste the link here...',
+    downloadMp3: 'Download MP3',
+    socialBrowserDesc: 'Open the social network within the app or in the external browser',
+    socialBrowserInfo: 'Open the social network within the app, find the content, and copy the link to paste in the download section.',
+    downloadComplete: 'Download complete',
+    downloadSavedToMusic: 'File saved to your music',
+    errorDownloadLink: 'Could not download from that link',
+    errorVerifyConnection: 'Could not download the file. Check your connection.',
+    playNow: 'Play now',
   },
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [settings, setSettings] = useState<AppSettings>(SettingsService.getSettings());
 
+  const [colorScheme, setColorScheme] = useState(Appearance.getColorScheme());
+
   useEffect(() => {
     loadSettings();
     const unsub = SettingsService.addListener((newSettings) => {
       setSettings({ ...newSettings });
     });
-    return unsub;
+    const appearanceSub = Appearance.addChangeListener(({ colorScheme: scheme }) => {
+      setColorScheme(scheme);
+    });
+    return () => {
+      unsub();
+      appearanceSub.remove();
+    };
   }, []);
 
   const loadSettings = async () => {
@@ -167,7 +222,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const isDark = settings.theme === 'dark' ||
-    (settings.theme === 'system' && true);
+    (settings.theme === 'system' && colorScheme === 'dark');
 
   const colors = isDark ? darkColors : lightColors;
 

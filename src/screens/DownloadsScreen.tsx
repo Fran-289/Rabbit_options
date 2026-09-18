@@ -5,6 +5,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import RNFS from 'react-native-fs';
 import StorageService from '../services/storageService';
 import { useMusic, Track } from '../context/MusicContext';
+import { useTheme } from '../context/ThemeContext';
+import { formatSize } from '../utils/helpers';
 
 interface DownloadedTrack {
   id: string;
@@ -21,6 +23,7 @@ const DownloadsScreen = ({ navigation }: any) => {
   const [refreshing, setRefreshing] = useState(false);
 
   const { play, setQueue, currentTrack, isPlaying } = useMusic();
+  const { colors, t } = useTheme();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -41,9 +44,7 @@ const DownloadsScreen = ({ navigation }: any) => {
           id: `track_${index}_${file.name}`,
           name: file.name.replace('.mp3', ''),
           path: file.path,
-          size: file.size < 1024 * 1024
-            ? `${(file.size / 1024).toFixed(1)} KB`
-            : `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+          size: formatSize(file.size),
           date: new Date(file.mtime || Date.now()).toLocaleDateString(),
           dateObj: file.mtime?.getTime?.() || Date.now(),
         }));
@@ -117,53 +118,53 @@ const DownloadsScreen = ({ navigation }: any) => {
     const isCurrentTrack = currentTrack?.id === item.id;
     return (
       <TouchableOpacity
-        style={[styles.trackItem, isCurrentTrack && styles.trackItemActive]}
+        style={[styles.trackItem, { backgroundColor: colors.surface }, isCurrentTrack && { backgroundColor: `${colors.primary}15` }]}
         onPress={() => handlePlay(item, index)}>
         <View style={styles.trackNumber}>
           {isCurrentTrack && isPlaying ? (
-            <Icon name="volume-high" size={16} color="#1DB954" />
+            <Icon name="volume-high" size={16} color={colors.primary} />
           ) : (
-            <Text style={styles.numberText}>{index + 1}</Text>
+            <Text style={[styles.numberText, { color: colors.textMuted }]}>{index + 1}</Text>
           )}
         </View>
         <View style={styles.trackInfo}>
-          <Text style={[styles.trackName, isCurrentTrack && styles.trackNameActive]} numberOfLines={1}>
+          <Text style={[styles.trackName, { color: isCurrentTrack ? colors.primary : colors.text }]} numberOfLines={1}>
             {item.name}
           </Text>
-          <Text style={styles.trackMeta}>{item.size} • {item.date}</Text>
+          <Text style={[styles.trackMeta, { color: colors.textMuted }]}>{item.size} • {item.date}</Text>
         </View>
         <TouchableOpacity style={styles.playBtn} onPress={() => handlePlay(item, index)}>
-          <Icon name="play" size={20} color="#1DB954" />
+          <Icon name="play" size={20} color={colors.primary} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.moreBtn} onPress={() => handleDelete(item)}>
-          <Icon name="ellipsis-vertical" size={18} color="#b3b3b3" />
+          <Icon name="ellipsis-vertical" size={18} color={colors.textMuted} />
         </TouchableOpacity>
       </TouchableOpacity>
     );
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <View style={styles.container}>
-        <View style={styles.header}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top']}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon name="chevron-back" size={28} color="#fff" />
+            <Icon name="chevron-back" size={28} color={colors.text} />
           </TouchableOpacity>
           <View style={styles.headerTitleContainer}>
-            <Text style={styles.title}>Mis Descargas</Text>
-            <Text style={styles.count}>{tracks.length} canciones</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Mis Descargas</Text>
+            <Text style={[styles.count, { color: colors.textMuted }]}>{tracks.length} canciones</Text>
           </View>
           <View style={{ width: 40 }} />
         </View>
 
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#1DB954" />
+            <ActivityIndicator size="large" color={colors.primary} />
           </View>
         ) : (
           <>
             {tracks.length > 0 && (
-              <TouchableOpacity style={styles.playAllBtn} onPress={handlePlayAll}>
+              <TouchableOpacity style={[styles.playAllBtn, { backgroundColor: colors.primary }]} onPress={handlePlayAll}>
                 <Icon name="play-circle" size={24} color="#fff" />
                 <Text style={styles.playAllText}>Reproducir todo</Text>
               </TouchableOpacity>
@@ -177,17 +178,17 @@ const DownloadsScreen = ({ navigation }: any) => {
                 <RefreshControl
                   refreshing={refreshing}
                   onRefresh={onRefresh}
-                  tintColor="#1DB954"
-                  colors={['#1DB954']}
+                  tintColor={colors.primary}
+                  colors={[colors.primary]}
                 />
               }
               ListEmptyComponent={
                 <View style={styles.emptyContainer}>
-                  <Icon name="download-outline" size={80} color="#535353" />
-                  <Text style={styles.emptyTitle}>No hay descargas</Text>
-                  <Text style={styles.emptySubtitle}>Busca música en YouTube para descargarla</Text>
+                  <Icon name="download-outline" size={80} color={colors.textMuted} />
+                  <Text style={[styles.emptyTitle, { color: colors.text }]}>No hay descargas</Text>
+                  <Text style={[styles.emptySubtitle, { color: colors.textMuted }]}>Busca música en YouTube para descargarla</Text>
                   <TouchableOpacity
-                    style={styles.searchBtn}
+                    style={[styles.searchBtn, { backgroundColor: colors.primary }]}
                     onPress={() => navigation.navigate('Buscar')}>
                     <Text style={styles.searchBtnText}>Buscar música</Text>
                   </TouchableOpacity>
@@ -202,44 +203,42 @@ const DownloadsScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#121212' },
-  container: { flex: 1, backgroundColor: '#121212' },
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: 20, paddingVertical: 15,
+    paddingHorizontal: 20, paddingVertical: 15, borderBottomWidth: 0.5,
   },
   headerTitleContainer: { alignItems: 'center' },
-  title: { fontSize: 20, fontWeight: 'bold', color: '#fff' },
-  count: { color: '#b3b3b3', fontSize: 12, marginTop: 3 },
+  title: { fontSize: 20, fontWeight: 'bold' },
+  count: { fontSize: 12, marginTop: 3 },
   playAllBtn: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#1DB954',
+    flexDirection: 'row', alignItems: 'center',
     marginHorizontal: 20, marginBottom: 15, padding: 12, borderRadius: 25,
     justifyContent: 'center',
   },
   playAllText: { color: '#fff', fontSize: 16, fontWeight: '600', marginLeft: 10 },
   listContent: { padding: 15 },
   trackItem: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#181818',
+    flexDirection: 'row', alignItems: 'center',
     padding: 12, borderRadius: 10, marginBottom: 10,
   },
-  trackItemActive: { backgroundColor: '#1DB95415' },
   trackNumber: { width: 30, alignItems: 'center' },
-  numberText: { color: '#b3b3b3', fontSize: 14 },
+  numberText: { fontSize: 14 },
   trackInfo: { flex: 1, marginLeft: 10 },
-  trackName: { color: '#fff', fontSize: 15, fontWeight: '500' },
-  trackNameActive: { color: '#1DB954' },
-  trackMeta: { color: '#b3b3b3', fontSize: 12, marginTop: 4 },
+  trackName: { fontSize: 15, fontWeight: '500' },
+  trackMeta: { fontSize: 12, marginTop: 4 },
   playBtn: { padding: 10 },
   moreBtn: { padding: 8 },
   emptyContainer: { alignItems: 'center', marginTop: 100 },
-  emptyTitle: { color: '#fff', fontSize: 18, fontWeight: '600', marginTop: 20 },
+  emptyTitle: { fontSize: 18, fontWeight: '600', marginTop: 20 },
   emptySubtitle: {
-    color: '#535353', fontSize: 13, marginTop: 8,
+    fontSize: 13, marginTop: 8,
     textAlign: 'center', paddingHorizontal: 40, marginBottom: 20,
   },
   searchBtn: {
-    backgroundColor: '#1DB954', paddingHorizontal: 24,
+    paddingHorizontal: 24,
     paddingVertical: 12, borderRadius: 25,
   },
   searchBtnText: { color: '#fff', fontSize: 16, fontWeight: '600' },

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import VaultService from '../../services/vaultService';
+import { useTheme } from '../../context/ThemeContext';
 
 const VaultAuthScreen = ({ navigation }: any) => {
   const [pattern, setPattern] = useState<number[]>([]);
@@ -16,6 +17,7 @@ const VaultAuthScreen = ({ navigation }: any) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [hasPattern, setHasPattern] = useState(false);
   const [hasPin, setHasPin] = useState(false);
+  const { colors } = useTheme();
 
   useEffect(() => {
     checkVaultSetup();
@@ -42,6 +44,7 @@ const VaultAuthScreen = ({ navigation }: any) => {
   const patternPoints = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   const handlePatternPress = async (num: number) => {
+    if (pattern.includes(num)) return;
     if (pattern.length >= 9) return;
     const newPattern = [...pattern, num];
     setPattern(newPattern);
@@ -172,25 +175,25 @@ const VaultAuthScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <View style={styles.container}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top']}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon name="chevron-back" size={28} color="#fff" />
+            <Icon name="chevron-back" size={28} color={colors.text} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.content}>
-          <View style={styles.iconContainer}>
+          <View style={[styles.iconContainer, { backgroundColor: `${colors.accent}20` }]}>
             <Icon
               name={showPattern ? 'grid' : 'keypad'}
               size={50}
-              color="#E91E63"
+              color={colors.accent}
             />
           </View>
 
-          <Text style={styles.title}>{getTitle()}</Text>
-          <Text style={styles.subtitle}>{getSubtitle()}</Text>
+          <Text style={[styles.title, { color: colors.text }]}>{getTitle()}</Text>
+          <Text style={[styles.subtitle, { color: colors.textMuted }]}>{getSubtitle()}</Text>
 
           {showPattern && (
             <View style={styles.patternGrid}>
@@ -201,13 +204,15 @@ const VaultAuthScreen = ({ navigation }: any) => {
                     key={num}
                     style={[
                       styles.patternDot,
-                      isActive && styles.patternDotActive,
+                      { backgroundColor: colors.surface, borderColor: colors.border },
+                      isActive && { borderColor: colors.accent, backgroundColor: `${colors.accent}20` },
                     ]}
                     onPress={() => handlePatternPress(num)}>
                     <View
                       style={[
                         styles.dotInner,
-                        isActive && styles.dotInnerActive,
+                        { backgroundColor: colors.border },
+                        isActive && { backgroundColor: colors.accent },
                       ]}
                     />
                   </TouchableOpacity>
@@ -224,7 +229,8 @@ const VaultAuthScreen = ({ navigation }: any) => {
                     key={i}
                     style={[
                       styles.pinDot,
-                      i < pin.length && styles.pinDotFilled,
+                      { backgroundColor: colors.surfaceLight, borderColor: colors.textMuted },
+                      i < pin.length && { backgroundColor: colors.accent, borderColor: colors.accent },
                     ]}
                   />
                 ))}
@@ -236,16 +242,17 @@ const VaultAuthScreen = ({ navigation }: any) => {
                       key={i}
                       style={[
                         styles.keyBtn,
-                        key === '' && styles.keyBtnEmpty,
+                        { backgroundColor: colors.surface },
+                        key === '' && { backgroundColor: 'transparent' },
                       ]}
                       onPress={() => {
                         if (key === 'del') handleClear();
                         else if (key !== '') handlePinPress(key);
                       }}>
                       {key === 'del' ? (
-                        <Icon name="backspace" size={24} color="#fff" />
+                        <Icon name="backspace" size={24} color={colors.text} />
                       ) : key !== '' ? (
-                        <Text style={styles.keyText}>{key}</Text>
+                        <Text style={[styles.keyText, { color: colors.text }]}>{key}</Text>
                       ) : null}
                     </TouchableOpacity>
                   )
@@ -262,7 +269,7 @@ const VaultAuthScreen = ({ navigation }: any) => {
                 setIsConfirming(false);
                 setConfirmPattern([]);
               }}>
-              <Text style={styles.resetText}>Reiniciar</Text>
+              <Text style={[styles.resetText, { color: colors.textMuted }]}>Reiniciar</Text>
             </TouchableOpacity>
           )}
 
@@ -275,8 +282,8 @@ const VaultAuthScreen = ({ navigation }: any) => {
                     setAuthMode('pattern');
                     setPin('');
                   }}>
-                  <Icon name="grid" size={20} color="#1DB954" />
-                  <Text style={styles.switchModeText}>Usar patron</Text>
+                  <Icon name="grid" size={20} color={colors.primary} />
+                  <Text style={[styles.switchModeText, { color: colors.primary }]}>Usar patron</Text>
                 </TouchableOpacity>
               )}
               {hasPin && authMode === 'pattern' && (
@@ -286,8 +293,8 @@ const VaultAuthScreen = ({ navigation }: any) => {
                     setAuthMode('pin');
                     setPattern([]);
                   }}>
-                  <Icon name="keypad" size={20} color="#1DB954" />
-                  <Text style={styles.switchModeText}>Usar PIN</Text>
+                  <Icon name="keypad" size={20} color={colors.primary} />
+                  <Text style={[styles.switchModeText, { color: colors.primary }]}>Usar PIN</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -299,50 +306,45 @@ const VaultAuthScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#121212' },
-  container: { flex: 1, backgroundColor: '#121212' },
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
   header: { paddingHorizontal: 20, paddingVertical: 15 },
   content: { flex: 1, alignItems: 'center', paddingHorizontal: 30 },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  loadingText: { color: '#535353', fontSize: 16, marginTop: 15 },
+  loadingText: { fontSize: 16, marginTop: 15 },
   iconContainer: {
     width: 100, height: 100, borderRadius: 50,
-    backgroundColor: '#E91E6320', justifyContent: 'center', alignItems: 'center',
+    justifyContent: 'center', alignItems: 'center',
     marginBottom: 25,
   },
-  title: { color: '#fff', fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
-  subtitle: { color: '#535353', fontSize: 14, marginBottom: 40 },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
+  subtitle: { fontSize: 14, marginBottom: 40 },
   patternGrid: {
     width: 280, flexDirection: 'row', flexWrap: 'wrap',
     justifyContent: 'center', gap: 25,
   },
   patternDot: {
-    width: 70, height: 70, borderRadius: 35, backgroundColor: '#181818',
+    width: 70, height: 70, borderRadius: 35,
     justifyContent: 'center', alignItems: 'center', borderWidth: 2,
-    borderColor: '#282828',
   },
-  patternDotActive: { borderColor: '#E91E63', backgroundColor: '#E91E6320' },
-  dotInner: { width: 20, height: 20, borderRadius: 10, backgroundColor: '#282828' },
-  dotInnerActive: { backgroundColor: '#E91E63' },
+  dotInner: { width: 20, height: 20, borderRadius: 10 },
   pinSection: { alignItems: 'center' },
   pinDots: { flexDirection: 'row', gap: 20, marginBottom: 40 },
   pinDot: {
-    width: 16, height: 16, borderRadius: 8, backgroundColor: '#282828',
-    borderWidth: 2, borderColor: '#535353',
+    width: 16, height: 16, borderRadius: 8,
+    borderWidth: 2,
   },
-  pinDotFilled: { backgroundColor: '#E91E63', borderColor: '#E91E63' },
   keypad: {
     width: 280, flexDirection: 'row', flexWrap: 'wrap',
     justifyContent: 'center', gap: 15,
   },
   keyBtn: {
-    width: 75, height: 75, borderRadius: 40, backgroundColor: '#181818',
+    width: 75, height: 75, borderRadius: 40,
     justifyContent: 'center', alignItems: 'center',
   },
-  keyBtnEmpty: { backgroundColor: 'transparent' },
-  keyText: { color: '#fff', fontSize: 28, fontWeight: '300' },
+  keyText: { fontSize: 28, fontWeight: '300' },
   resetBtn: { marginTop: 30, paddingVertical: 12, paddingHorizontal: 30 },
-  resetText: { color: '#535353', fontSize: 16 },
+  resetText: { fontSize: 16 },
   switchModeContainer: {
     marginTop: 20, alignItems: 'center', gap: 10,
   },
@@ -350,7 +352,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 8,
     paddingVertical: 12, paddingHorizontal: 24,
   },
-  switchModeText: { color: '#1DB954', fontSize: 16, fontWeight: '500' },
+  switchModeText: { fontSize: 16, fontWeight: '500' },
 });
 
 export default VaultAuthScreen;

@@ -108,6 +108,23 @@ class StorageService {
   async fileExists(filePath: string): Promise<boolean> {
     return RNFS.exists(filePath);
   }
+
+  async clearCache(): Promise<void> {
+    try {
+      const cachePath = `${RNFS.CachesDirectoryPath}`;
+      const exists = await RNFS.exists(cachePath);
+      if (exists) {
+        const files = await RNFS.readDir(cachePath);
+        for (const file of files) {
+          try {
+            await RNFS.unlink(file.path);
+          } catch { /* skip individual file errors */ }
+        }
+      }
+    } catch (error) {
+      console.error('Error clearing cache:', error);
+    }
+  }
 }
 
 export default new StorageService();

@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import SettingsService, { AppSettings } from '../services/settingsService';
 import VaultService from '../services/vaultService';
+import StorageService from '../services/storageService';
 import { useTheme } from '../context/ThemeContext';
 
 const SettingsScreen = ({ navigation }: any) => {
@@ -58,7 +59,14 @@ const SettingsScreen = ({ navigation }: any) => {
   const handleClearCache = () => {
     Alert.alert(t('clearCache'), '', [
       { text: t('cancel'), style: 'cancel' },
-      { text: 'Limpiar', style: 'destructive', onPress: () => Alert.alert('Hecho', 'Caché limpiada') },
+      {
+        text: 'Limpiar',
+        style: 'destructive',
+        onPress: async () => {
+          await StorageService.clearCache();
+          Alert.alert('Hecho', 'Caché limpiada correctamente');
+        },
+      },
     ]);
   };
 
@@ -258,7 +266,7 @@ const SettingsScreen = ({ navigation }: any) => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={[styles.resetButton, { borderColor: colors.danger }]} onPress={handleResetSettings}>
+          <TouchableOpacity style={[styles.resetButton, { borderColor: colors.danger, backgroundColor: colors.surface }]} onPress={handleResetSettings}>
             <Text style={[styles.resetButtonText, { color: colors.danger }]}>{t('resetConfig')}</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -316,7 +324,7 @@ const styles = StyleSheet.create({
   settingText: { fontSize: 15 },
   settingRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   settingValue: { fontSize: 14 },
-  resetButton: { marginHorizontal: 20, marginTop: 20, marginBottom: 40, padding: 15, borderRadius: 12, backgroundColor: '#181818', alignItems: 'center', borderWidth: 1 },
+  resetButton: { marginHorizontal: 20, marginTop: 20, marginBottom: 40, padding: 15, borderRadius: 12, alignItems: 'center', borderWidth: 1 },
   resetButtonText: { fontSize: 16, fontWeight: '500' },
   modalOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center', zIndex: 100 },
   modalContent: { borderRadius: 20, padding: 30, alignItems: 'center', width: '85%' },

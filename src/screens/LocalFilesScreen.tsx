@@ -7,8 +7,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import RNFS from 'react-native-fs';
 import { useTheme } from '../context/ThemeContext';
+import { useMusic } from '../context/MusicContext';
 import StorageService from '../services/storageService';
+import SettingsService from '../services/settingsService';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
+import { isAudioFile, isVideoFile, formatSize } from '../utils/helpers';
 
 interface LocalFile {
   id: string;
@@ -23,6 +26,7 @@ interface LocalFile {
 
 const LocalFilesScreen = ({ navigation }: any) => {
   const { colors, t } = useTheme();
+  const { play } = useMusic();
   const [files, setFiles] = useState<LocalFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'local' | 'download'>('local');
@@ -66,22 +70,15 @@ const LocalFilesScreen = ({ navigation }: any) => {
         if (exists) {
           const folderFiles = await RNFS.readDir(basePath);
           const mediaFiles = folderFiles.filter(f =>
-            f.name.endsWith('.mp3') || f.name.endsWith('.opus') ||
-            f.name.endsWith('.m4a') || f.name.endsWith('.ogg') ||
-            f.name.endsWith('.mp4') || f.name.endsWith('.mkv') ||
-            f.name.endsWith('.3gp') || f.name.endsWith('.webm') ||
-            f.name.endsWith('.wav') || f.name.endsWith('.aac')
+            isAudioFile(f.name) || isVideoFile(f.name)
           );
           for (const file of mediaFiles.slice(0, 100)) {
-            const isVideo = file.name.endsWith('.mp4') || file.name.endsWith('.mkv') ||
-              file.name.endsWith('.3gp') || file.name.endsWith('.webm');
+            const isVideo = isVideoFile(file.name);
             allFiles.push({
               id: `${folder.name}_${file.name}`,
               name: file.name.replace(/\.[^.]+$/, ''),
               path: file.path,
-              size: file.size < 1024 * 1024
-                ? `${(file.size / 1024).toFixed(1)} KB`
-                : `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+              size: formatSize(file.size),
               source: folder.name,
               sourceIcon: folder.icon,
               sourceColor: folder.color,
@@ -97,7 +94,13 @@ const LocalFilesScreen = ({ navigation }: any) => {
   };
 
   const handlePlay = (file: LocalFile) => {
-    navigation.navigate('Player', { track: { ...file, name: file.name } });
+    play({
+      id: file.id,
+      name: file.name,
+      path: file.path,
+      source: file.source,
+    });
+    navigation.navigate('Player');
   };
 
   const openInAppBrowser = async (url: string, name: string) => {
@@ -145,6 +148,23 @@ const LocalFilesScreen = ({ navigation }: any) => {
   const handleUrlDownload = async () => {
     const url = urlInput.trim();
     if (!url) return;
+
+    const settings = await SettingsService.getSettings();
+    if (settings.wifiOnly) {
+      const { default: NetInfoModule } = await import('@react-native-community/netinfo');
+      const state = await NetInfoModule.fetch();
+      if (!state.isConnected || state.type !== 'wifi') {
+        Alert.alert(
+          'WiFi requerido',
+          'Tienes activada la opción "Solo WiFi" para descargas. Conectate a una red WiFi o desactiva esta opción en Configuración.',
+          [
+            { text: 'Cancelar', style: 'cancel' },
+            { text: 'Ir a Configuración', onPress: () => navigation.navigate('Settings') },
+          ]
+        );
+        return;
+      }
+    }
 
     let fullUrl = url;
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
@@ -266,7 +286,7 @@ const LocalFilesScreen = ({ navigation }: any) => {
               ].map(f => (
                 <TouchableOpacity
                   key={f.key}
-                  style={[styles.filterBtn, activeFilter === f.key && { backgroundColor: colors.primary }]}
+                  style={[styles.filterBtn, { backgroundColor: colors.surface }, activeFilter === f.key && { backgroundColor: colors.primary }]}
                   onPress={() => setActiveFilter(f.key)}>
                   {f.icon && <Icon name={f.icon} size={13} color={activeFilter === f.key ? '#fff' : f.color} />}
                   <Text style={[styles.filterText, { color: activeFilter === f.key ? '#fff' : colors.textSecondary }]}>{f.label}</Text>
@@ -420,7 +440,7 @@ const styles = StyleSheet.create({
   tabBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, borderRadius: 10, gap: 6 },
   tabText: { fontSize: 14, fontWeight: '500' },
   filterContainer: { flexDirection: 'row', paddingHorizontal: 15, marginBottom: 10, gap: 6, flexWrap: 'wrap' },
-  filterBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#181818', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, gap: 4 },
+  filterBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, gap: 4 },
   filterText: { fontSize: 12 },
   resultCount: { fontSize: 12, marginBottom: 10 },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
