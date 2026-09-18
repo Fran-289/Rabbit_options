@@ -5,6 +5,7 @@ import SettingsService, { AppSettings } from '../services/settingsService';
 interface ThemeColors {
   background: string;
   surface: string;
+  surfaceLight: string;
   card: string;
   text: string;
   textSecondary: string;
@@ -21,6 +22,7 @@ interface ThemeColors {
 const darkColors: ThemeColors = {
   background: '#121212',
   surface: '#181818',
+  surfaceLight: '#282828',
   card: '#1E1E1E',
   text: '#FFFFFF',
   textSecondary: '#b3b3b3',
@@ -37,6 +39,7 @@ const darkColors: ThemeColors = {
 const lightColors: ThemeColors = {
   background: '#F5F5F5',
   surface: '#FFFFFF',
+  surfaceLight: '#F0F0F0',
   card: '#FFFFFF',
   text: '#121212',
   textSecondary: '#666666',

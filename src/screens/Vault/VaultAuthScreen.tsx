@@ -73,9 +73,9 @@ const VaultAuthScreen = ({ navigation }: any) => {
           if (match) {
             await VaultService.saveCredentials(confirmPattern, '');
             Alert.alert('Exito', 'Patron configurado. Ahora configura tu PIN.');
-            setIsSetup(true);
             setHasPattern(true);
             setSetupStep('pin');
+            setAuthMode('pin');
             setIsConfirming(false);
             setPattern([]);
             setConfirmPattern([]);

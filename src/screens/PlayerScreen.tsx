@@ -149,7 +149,7 @@ const PlayerScreen = ({ navigation }: any) => {
 
   if (!currentTrack) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: '#0a0a0a' }]} edges={['top', 'bottom']}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
         <View style={[styles.container, { backgroundColor: colors.background }]}>
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -173,10 +173,10 @@ const PlayerScreen = ({ navigation }: any) => {
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: '#0a0a0a' }]} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       <Video
         ref={videoRef}
-        source={{ uri: `file://${currentTrack.path}` }}
+        source={{ uri: currentTrack.path.startsWith('http') ? currentTrack.path : `file://${currentTrack.path}` }}
         paused={!isPlaying}
         volume={volume}
         resizeMode="contain"

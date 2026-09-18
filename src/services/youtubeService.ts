@@ -34,7 +34,10 @@ class YouTubeService {
       try {
         const pageParam = pageToken ? `&page=${pageToken}` : '';
         const url = `${instance}/api/v1/search?q=${encodeURIComponent(query)}&type=video${pageParam}&sort_by=relevance`;
-        const response = await fetch(url, { timeout: 8000 } as any);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
         if (!response.ok) continue;
         const data = await response.json();
 

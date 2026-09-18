@@ -89,6 +89,14 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     setProgress(0);
     setIsReady(false);
     setIsBuffering(true);
+    setQueueState(prev => {
+      const exists = prev.some(t => t.id === track.id);
+      if (!exists) {
+        setCurrentIndex(0);
+        return [track];
+      }
+      return prev;
+    });
   }, []);
 
   const pause = useCallback(() => {
@@ -122,7 +130,13 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
 
     let nextIndex: number;
     if (isShuffled) {
-      nextIndex = Math.floor(Math.random() * queue.length);
+      if (queue.length === 1) {
+        nextIndex = 0;
+      } else {
+        do {
+          nextIndex = Math.floor(Math.random() * queue.length);
+        } while (nextIndex === currentIndex);
+      }
     } else {
       nextIndex = currentIndex + 1;
       if (nextIndex >= queue.length) {
@@ -186,12 +200,34 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   }, []);
 
   const removeFromQueue = useCallback((trackId: string) => {
-    setQueueState(prev => prev.filter(t => t.id !== trackId));
-  }, []);
+    setQueueState(prev => {
+      const removedIndex = prev.findIndex(t => t.id === trackId);
+      const newQueue = prev.filter(t => t.id !== trackId);
+      if (removedIndex !== -1) {
+        if (removedIndex < currentIndex) {
+          setCurrentIndex(prev => prev - 1);
+        } else if (removedIndex === currentIndex) {
+          if (newQueue.length === 0) {
+            setCurrentTrack(null);
+            setIsPlaying(false);
+            setCurrentIndex(-1);
+          } else {
+            const nextIdx = removedIndex >= newQueue.length ? 0 : removedIndex;
+            setCurrentIndex(nextIdx);
+            setCurrentTrack(newQueue[nextIdx]);
+          }
+        }
+      }
+      return newQueue;
+    });
+  }, [currentIndex]);
 
+  // Fix #7: clearQueue stops playback
   const clearQueue = useCallback(() => {
     setQueueState([]);
     setCurrentIndex(-1);
+    setCurrentTrack(null);
+    setIsPlaying(false);
   }, []);
 
   const toggleShuffle = useCallback(() => {

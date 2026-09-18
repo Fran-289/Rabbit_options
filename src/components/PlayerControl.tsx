@@ -11,11 +11,10 @@ import { useTheme } from '../context/ThemeContext';
 
 interface PlayerControlProps {
   mini?: boolean;
-  navigation?: any;
   onNavigateToPlayer?: () => void;
 }
 
-const PlayerControl: React.FC<PlayerControlProps> = ({ mini = false, navigation, onNavigateToPlayer }) => {
+const PlayerControl: React.FC<PlayerControlProps> = ({ mini = false, onNavigateToPlayer }) => {
   const {
     currentTrack,
     isPlaying,
@@ -39,7 +38,7 @@ const PlayerControl: React.FC<PlayerControlProps> = ({ mini = false, navigation,
     return (
       <TouchableOpacity
         style={[styles.miniContainer, { backgroundColor: colors.surfaceLight, borderTopColor: colors.border }]}
-        onPress={() => onNavigateToPlayer ? onNavigateToPlayer() : navigation?.navigate('Player')}>
+        onPress={() => onNavigateToPlayer?.()}>
         <View style={styles.miniInfo}>
           <View style={[styles.miniThumbnail, { backgroundColor: colors.border }]}>
             <Icon name="musical-notes" size={16} color={colors.primary} />

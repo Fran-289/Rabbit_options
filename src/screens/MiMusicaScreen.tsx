@@ -195,6 +195,10 @@ const MiMusicaScreen = ({ navigation }: any) => {
         <TouchableOpacity style={styles.actionBtn} onPress={() => {
           if (count > 0) {
             const plTracks = getPlaylistTracks(item);
+            if (plTracks.length === 0) {
+              Alert.alert('Error', 'No se encontraron las canciones en el dispositivo');
+              return;
+            }
             setQueue(plTracks, 0);
             play(plTracks[0]);
             navigation.navigate('Player');

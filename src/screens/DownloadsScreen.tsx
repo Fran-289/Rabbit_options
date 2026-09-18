@@ -32,8 +32,8 @@ const DownloadsScreen = ({ navigation }: any) => {
     return unsubscribe;
   }, [navigation]);
 
-  const loadDownloads = async () => {
-    setLoading(true);
+  const loadDownloads = async (isRefresh = false) => {
+    if (!isRefresh) setLoading(true);
     try {
       const path = await StorageService.getMusicPath();
       const exists = await RNFS.exists(path);
@@ -59,7 +59,7 @@ const DownloadsScreen = ({ navigation }: any) => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await loadDownloads();
+    await loadDownloads(true);
     setRefreshing(false);
   }, []);
 

@@ -70,15 +70,7 @@ const AppContent = () => {
   const navigation = useNavigation<any>();
 
   const handleMiniPlayerPress = () => {
-    const state = navigation.getState();
-    if (state && state.routes) {
-      const activeRoute = state.routes[state.index];
-      if (activeRoute?.name) {
-        navigation.navigate(activeRoute.name, {
-          screen: 'Player',
-        });
-      }
-    }
+    navigation.navigate('Inicio', { screen: 'Player' });
   };
 
   return (

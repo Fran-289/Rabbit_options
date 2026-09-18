@@ -51,13 +51,17 @@ class FavoritesService {
   async toggleFavorite(trackId: string): Promise<boolean> {
     try {
       const favorites = await this.getFavorites();
+      let result: boolean;
       if (favorites.includes(trackId)) {
-        await this.removeFavorite(trackId);
-        return false;
+        const updated = favorites.filter(id => id !== trackId);
+        await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
+        result = false;
       } else {
-        await this.addFavorite(trackId);
-        return true;
+        favorites.push(trackId);
+        await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+        result = true;
       }
+      return result;
     } catch (error) {
       console.error('Error toggling favorite:', error);
       return false;
