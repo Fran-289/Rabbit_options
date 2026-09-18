@@ -174,8 +174,8 @@ const SettingsScreen = ({ navigation }: any) => {
               <Switch
                 value={settings.wifiOnly}
                 onValueChange={async (value) => { await SettingsService.setWifiOnly(value); reloadSettings(); }}
-                trackColor={{ false: '#282828', true: '#1DB954' }}
-                thumbColor={settings.wifiOnly ? '#fff' : '#b3b3b3'}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor={settings.wifiOnly ? '#fff' : colors.textMuted}
               />
             </View>
           </View>
@@ -193,8 +193,8 @@ const SettingsScreen = ({ navigation }: any) => {
               <Switch
                 value={settings.autoPlay}
                 onValueChange={async (value) => { await SettingsService.setAutoPlay(value); reloadSettings(); }}
-                trackColor={{ false: '#282828', true: '#1DB954' }}
-                thumbColor={settings.autoPlay ? '#fff' : '#b3b3b3'}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor={settings.autoPlay ? '#fff' : colors.textMuted}
               />
             </View>
 
@@ -208,8 +208,8 @@ const SettingsScreen = ({ navigation }: any) => {
               <Switch
                 value={settings.notifications}
                 onValueChange={async (value) => { await SettingsService.setNotifications(value); reloadSettings(); }}
-                trackColor={{ false: '#282828', true: '#1DB954' }}
-                thumbColor={settings.notifications ? '#fff' : '#b3b3b3'}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor={settings.notifications ? '#fff' : colors.textMuted}
               />
             </View>
           </View>

@@ -212,25 +212,25 @@ const SearchScreen = ({ navigation }: any) => {
   };
 
   const renderVideoItem = ({ item }: { item: YouTubeVideo }) => (
-    <View style={styles.videoItem}>
+    <View style={[styles.videoItem, { backgroundColor: colors.surface }]}>
       <View style={styles.thumbnailContainer}>
         {item.thumbnail ? (
           <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
         ) : (
-          <View style={[styles.thumbnail, styles.thumbnailPlaceholder]}>
-            <Icon name="videocam" size={30} color="#535353" />
+          <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: colors.border }]}>
+            <Icon name="videocam" size={30} color={colors.textMuted} />
           </View>
         )}
         {item.duration ? (
-          <View style={styles.durationBadge}>
-            <Text style={styles.durationText}>{item.duration}</Text>
+          <View style={[styles.durationBadge, { backgroundColor: 'rgba(0,0,0,0.8)' }]}>
+            <Text style={[styles.durationText, { color: '#fff' }]}>{item.duration}</Text>
           </View>
         ) : null}
       </View>
       <View style={styles.videoInfo}>
-        <Text style={styles.videoTitle} numberOfLines={2}>{item.title}</Text>
-        <Text style={styles.videoChannel} numberOfLines={1}>{item.channel}</Text>
-        {item.viewCount ? <Text style={styles.videoViews}>{item.viewCount}</Text> : null}
+        <Text style={[styles.videoTitle, { color: colors.text }]} numberOfLines={2}>{item.title}</Text>
+        <Text style={[styles.videoChannel, { color: colors.textSecondary }]} numberOfLines={1}>{item.channel}</Text>
+        {item.viewCount ? <Text style={[styles.videoViews, { color: colors.textMuted }]}>{item.viewCount}</Text> : null}
         <View style={styles.previewRow}>
           <TouchableOpacity
             style={styles.previewBtn}
@@ -243,11 +243,11 @@ const SearchScreen = ({ navigation }: any) => {
               });
             }}>
             <Icon name="play-circle" size={16} color={colors.primary} />
-            <Text style={[styles.previewText, { color: colors.primary }]}>Vista previa</Text>
+            <Text style={[styles.previewText, { color: colors.primary }]}>{t('preview') || 'Vista previa'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.downloadBtn, { backgroundColor: colors.primary }]} onPress={() => setSelectedVideo(item)}>
             <Icon name="download" size={16} color="#fff" />
-            <Text style={styles.downloadText}>Descargar</Text>
+            <Text style={[styles.downloadText, { color: '#fff' }]}>{t('download')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -300,28 +300,28 @@ const SearchScreen = ({ navigation }: any) => {
                 {searchHistory.length > 0 ? (
                   <>
                     <View style={styles.historyHeader}>
-                      <Text style={styles.historyTitle}>Búsquedas recientes</Text>
+                      <Text style={[styles.historyTitle, { color: colors.text }]}>{t('searchHistory') || 'Búsquedas recientes'}</Text>
                       <TouchableOpacity onPress={handleClearHistory}>
-                        <Text style={styles.clearHistoryText}>Limpiar</Text>
+                        <Text style={[styles.clearHistoryText, { color: colors.primary }]}>{t('clearCache') || 'Limpiar'}</Text>
                       </TouchableOpacity>
                     </View>
                     {searchHistory.map((item, index) => (
                       <TouchableOpacity
                         key={index}
-                        style={styles.historyItem}
+                        style={[styles.historyItem, { backgroundColor: colors.surface }]}
                         onPress={() => handleHistoryPress(item)}>
-                        <Icon name="time-outline" size={20} color="#535353" />
-                        <Text style={styles.historyText}>{item}</Text>
-                        <Icon name="arrow-forward" size={16} color="#535353" />
+                        <Icon name="time-outline" size={20} color={colors.textMuted} />
+                        <Text style={[styles.historyText, { color: colors.text }]}>{item}</Text>
+                        <Icon name="arrow-forward" size={16} color={colors.textMuted} />
                       </TouchableOpacity>
                     ))}
                   </>
                 ) : (
                   <>
                     <Icon name="logo-youtube" size={80} color="#FF0000" />
-                    <Text style={styles.emptyTitle}>Busca tu música favorita</Text>
-                    <Text style={styles.emptySubtitle}>
-                      Escribe el nombre de una canción, artista o video
+                    <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('search') || 'Busca tu música favorita'}</Text>
+                    <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+                      {t('searchPlaceholder') || 'Escribe el nombre de una canción, artista o video'}
                     </Text>
                   </>
                 )}

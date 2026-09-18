@@ -15,7 +15,6 @@ function App() {
     <SafeAreaProvider>
       <ThemeProvider>
         <MusicProvider>
-          <StatusBar barStyle="light-content" />
           <AppNavigator />
         </MusicProvider>
       </ThemeProvider>
